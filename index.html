@@ -298,6 +298,9 @@
   </section>
 
   <p class="save-note" id="save-note">Yükleniyor…</p>
+  <p style="text-align:center;margin-top:10px;">
+    <button id="reset-btn" style="background:none;border:none;color:var(--rose);font-size:12px;cursor:pointer;text-decoration:underline;">Tüm verileri sıfırla</button>
+  </p>
 </div>
 
 <script type="module">
@@ -663,6 +666,13 @@ document.querySelectorAll('.tab-btn').forEach(btn=>{
     btn.classList.add('active');
     document.getElementById(btn.dataset.tab).classList.add('active');
   });
+});
+
+document.getElementById('reset-btn').addEventListener('click', async ()=>{
+  if(!confirm('Tüm verileri silmek istediğine emin misin? Bu geri alınamaz.')) return;
+  data = defaultData();
+  await save();
+  render();
 });
 
 load();
