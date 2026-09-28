@@ -326,6 +326,10 @@
       <h2>👣 Spor</h2>
       <p class="sub">Her gün yapılması gerekmiyor — haftada 4/7 hedef, istatistik kısmında ayrı takip edilir</p>
       <div class="row" id="sport-today-row"><label><input type="checkbox" id="sport-today-checkbox"><span>Bugün spor yaptım</span></label></div>
+      <div id="sport-muscle-wrap" style="display:none;">
+        <p class="sub" id="sport-muscle-hint" style="margin:10px 0 4px;">Hangi bölgeleri çalıştırdın? (en az birini seç)</p>
+        <div id="sport-muscle-list"></div>
+      </div>
     </div>
     <div class="card">
       <h2>☀️ Günlük liste</h2>
@@ -444,6 +448,11 @@
       <div id="daily-chart"></div>
     </div>
     <div class="card">
+      <h2>💪 Kas grupları</h2>
+      <p class="sub">Spor günlerinde hangi bölgeyi kaç kez çalıştırdın, tüm zamanlar</p>
+      <div id="muscle-chart"></div>
+    </div>
+    <div class="card">
       <h2>⏳ Ekran süresi — günlük</h2>
       <p class="sub">Girdiğin her gün, saat cinsinden</p>
       <div id="screen-daily-chart"></div>
@@ -487,6 +496,14 @@ const STORAGE_KEY = 'panom-data';
 const DAY_NAMES = {mon:'Pzt',tue:'Sal',wed:'Çrş',thu:'Per',fri:'Cum',sat:'Cmt',sun:'Paz'};
 const DAY_ORDER = ['mon','tue','wed','thu','fri','sat','sun'];
 
+const MUSCLE_GROUPS = [
+  {id:'gogus', label:'Göğüs'},
+  {id:'omuz', label:'Omuz'},
+  {id:'sirt', label:'Sırt'},
+  {id:'bacak', label:'Bacak'},
+  {id:'arkaKol', label:'Arka Kol'},
+  {id:'onKol', label:'Ön Kol'}
+];
 const DAILY_ITEMS = [
   {id:'kahvalti', label:'Kahvaltı', hint:'Hafta içi, mesaiden önce 09:30\'a kadar'},
   {id:'kreatin', label:'Kreatin'},
@@ -561,7 +578,14 @@ function getDaily(key){
     data.daily[key].ingKitapSayfaGun = 0;
     data.daily[key].diziBolumGun = 0;
     data.daily[key].ekranSuresiDk = null;
+    data.daily[key].sporBolgeler = {};
   }
+  if(!data.daily[key].sporBolgeler){
+    data.daily[key].sporBolgeler = {};
+  }
+  MUSCLE_GROUPS.forEach(m=>{
+    if(data.daily[key].sporBolgeler[m.id]==null) data.daily[key].sporBolgeler[m.id] = false;
+  });
   return data.daily[key];
 }
 function getWeekly(key){
@@ -675,13 +699,37 @@ function render(){
 
   const sportRow = document.getElementById('sport-today-row');
   const sportCb = document.getElementById('sport-today-checkbox');
+  const muscleWrap = document.getElementById('sport-muscle-wrap');
+  const muscleHint = document.getElementById('sport-muscle-hint');
   sportCb.checked = !!d.spor;
   sportRow.classList.toggle('done', !!d.spor);
   sportCb.onchange = e=>{
     d.spor = e.target.checked;
     sportRow.classList.toggle('done', e.target.checked);
     queueSave();
+    render();
   };
+
+  muscleWrap.style.display = d.spor ? 'block' : 'none';
+  const ml = document.getElementById('sport-muscle-list');
+  ml.innerHTML = '';
+  MUSCLE_GROUPS.forEach(m=>{
+    const row = document.createElement('div');
+    row.className = 'row'+(d.sporBolgeler[m.id]?' done':'');
+    row.innerHTML = `<label><input type="checkbox" ${d.sporBolgeler[m.id]?'checked':''} data-id="${m.id}"><span>${m.label}</span></label>`;
+    row.querySelector('input').addEventListener('change', e=>{
+      d.sporBolgeler[m.id] = e.target.checked;
+      row.classList.toggle('done', e.target.checked);
+      queueSave();
+      updateMuscleHint();
+    });
+    ml.appendChild(row);
+  });
+  function updateMuscleHint(){
+    const anySelected = MUSCLE_GROUPS.some(m=>d.sporBolgeler[m.id]);
+    muscleHint.style.color = (d.spor && !anySelected) ? 'var(--rose)' : '';
+  }
+  updateMuscleHint();
 
   const dl = document.getElementById('daily-checklist');
   dl.innerHTML = '';
@@ -886,6 +934,26 @@ function renderStats(){
     const height = pct===null?2:Math.max(2,pct*0.85);
     return `<div class="bar-wrap"><div class="bar${pct===null?' zero':''}" style="height:${height}px;" title="${pct===null?'veri yok':pct+'%'}"></div><div class="bar-day">${day}</div></div>`;
   }).join('')}</div>`;
+
+  const mc = document.getElementById('muscle-chart');
+  const muscleTotals = {};
+  MUSCLE_GROUPS.forEach(m=>muscleTotals[m.id]=0);
+  Object.keys(data.daily).forEach(k=>{
+    const rec = data.daily[k];
+    if(rec && rec.sporBolgeler){
+      MUSCLE_GROUPS.forEach(m=>{ if(rec.sporBolgeler[m.id]) muscleTotals[m.id]++; });
+    }
+  });
+  const muscleMax = Math.max(...MUSCLE_GROUPS.map(m=>muscleTotals[m.id]));
+  if(muscleMax===0){
+    mc.innerHTML = '<p class="empty-note">Henüz spor günü + bölge işaretlenmedi.</p>';
+  }else{
+    mc.innerHTML = `<div class="bars">${MUSCLE_GROUPS.map(m=>{
+      const cnt = muscleTotals[m.id];
+      const height = cnt===0?2:Math.max(2,(cnt/muscleMax)*85);
+      return `<div class="bar-wrap"><div class="bar${cnt===0?' zero':''}" style="height:${height}px;" title="${cnt} gün"></div><div class="bar-day">${m.label}</div></div>`;
+    }).join('')}</div>`;
+  }
 
   const sdc = document.getElementById('screen-daily-chart');
   const screenKeys = lastNDates(30).filter(k=> data.daily[k] && data.daily[k].ekranSuresiDk!=null);
