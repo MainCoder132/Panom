@@ -253,6 +253,15 @@
       <div class="row"><label style="flex:1;">Kaç sayfa kitap okudun?</label><input type="number" id="today-kitap-sayfa" placeholder="0" style="max-width:90px;"></div>
       <div class="row"><label style="flex:1;">Kaç sayfa İngilizce kitap okudun?</label><input type="number" id="today-ing-kitap-sayfa" placeholder="0" style="max-width:90px;"></div>
       <div class="row"><label style="flex:1;">Kaç bölüm İngilizce dizi izledin?</label><input type="number" id="today-dizi-bolum" placeholder="0" style="max-width:90px;"></div>
+      <div class="row">
+        <label style="flex:1;">Ekran süresi</label>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <input type="number" id="today-ekran-saat" placeholder="5" style="max-width:60px;">
+          <span style="font-size:13px;color:var(--ink-soft);">sa</span>
+          <input type="number" id="today-ekran-dakika" placeholder="50" min="0" max="59" style="max-width:60px;">
+          <span style="font-size:13px;color:var(--ink-soft);">dk</span>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -286,6 +295,14 @@
       <p class="sub">Haftada 4-5 bölüm — günlük listeden işlenir</p>
       <div class="progress-track"><div class="progress-fill" id="show-progress"></div></div>
       <div class="progress-label"><span id="show-count-label"></span><span>hedef 5 bölüm</span></div>
+    </div>
+    <div class="card">
+      <h2>Ekran süresi</h2>
+      <p class="sub">Bu haftanın günlük ortalaması — günlük listeden işlenir</p>
+      <div class="stat-grid">
+        <div class="stat-box"><div class="num" id="screen-week-avg">—</div><div class="lbl">günlük ortalama</div></div>
+        <div class="stat-box"><div class="num" id="screen-week-days">—</div><div class="lbl">veri girilen gün</div></div>
+      </div>
     </div>
     <div class="card">
       <h2>Ev işleri ve düzen</h2>
@@ -331,6 +348,16 @@
       <h2>Günlük tamamlanma</h2>
       <p class="sub">Son 14 gün, günlük listenin yüzde kaçı bitti</p>
       <div id="daily-chart"></div>
+    </div>
+    <div class="card">
+      <h2>Ekran süresi — günlük</h2>
+      <p class="sub">Girdiğin her gün, saat cinsinden</p>
+      <div id="screen-daily-chart"></div>
+    </div>
+    <div class="card">
+      <h2>Ekran süresi — haftalık ortalama</h2>
+      <p class="sub">Son 8 hafta, günlük ortalama saat</p>
+      <div id="screen-weekly-chart"></div>
     </div>
     <div class="card">
       <h2>Haftalık hedefler</h2>
@@ -439,6 +466,7 @@ function getDaily(key){
     data.daily[key].kitapSayfaGun = 0;
     data.daily[key].ingKitapSayfaGun = 0;
     data.daily[key].diziBolumGun = 0;
+    data.daily[key].ekranSuresiDk = null;
   }
   return data.daily[key];
 }
@@ -452,9 +480,14 @@ function getWeekly(key){
 function weekdayIndex(dateKey){
   return (new Date(dateKey).getDay()+6)%7;
 }
+function fmtHM(mins){
+  const h = Math.floor(mins/60), m = Math.round(mins%60);
+  return h+' sa '+m+' dk';
+}
 function computeWeeklyAgg(wKey){
   const sportDays = {};
   let sportCount=0, kitapSayfa=0, kitapGun=0, dizi=0, ingKitapSayfa=0, ingKitapGun=0;
+  let ekranTotal=0, ekranDays=0;
   DAY_ORDER.forEach((code,i)=>{
     const key = todayKey(dateOfWeekday(wKey,i));
     const rec = data.daily[key];
@@ -468,8 +501,13 @@ function computeWeeklyAgg(wKey){
     ingKitapSayfa += ip;
     if(ip>0) ingKitapGun++;
     dizi += (rec && rec.diziBolumGun) || 0;
+    if(rec && rec.ekranSuresiDk!=null){
+      ekranTotal += rec.ekranSuresiDk;
+      ekranDays++;
+    }
   });
-  return {sportDays, sportCount, kitapSayfa, kitapGun, dizi, ingKitapSayfa, ingKitapGun};
+  const ekranOrtalamaDk = ekranDays>0 ? ekranTotal/ekranDays : null;
+  return {sportDays, sportCount, kitapSayfa, kitapGun, dizi, ingKitapSayfa, ingKitapGun, ekranOrtalamaDk, ekranDays};
 }
 
 async function load(){
@@ -558,6 +596,8 @@ function render(){
   document.getElementById('today-kitap-sayfa').value = d.kitapSayfaGun || '';
   document.getElementById('today-ing-kitap-sayfa').value = d.ingKitapSayfaGun || '';
   document.getElementById('today-dizi-bolum').value = d.diziBolumGun || '';
+  document.getElementById('today-ekran-saat').value = d.ekranSuresiDk!=null ? Math.floor(d.ekranSuresiDk/60) : '';
+  document.getElementById('today-ekran-dakika').value = d.ekranSuresiDk!=null ? d.ekranSuresiDk%60 : '';
 
   document.getElementById('week-range').textContent = weekRangeLabel(wKey);
   const agg = computeWeeklyAgg(wKey);
@@ -585,6 +625,9 @@ function render(){
 
   document.getElementById('show-progress').style.width = Math.min(100,(agg.dizi/5)*100)+'%';
   document.getElementById('show-count-label').textContent = agg.dizi+' bölüm';
+
+  document.getElementById('screen-week-avg').textContent = agg.ekranOrtalamaDk!=null ? fmtHM(agg.ekranOrtalamaDk) : '—';
+  document.getElementById('screen-week-days').textContent = agg.ekranDays;
 
   const wl = document.getElementById('weekly-checklist');
   wl.innerHTML = '';
@@ -725,6 +768,41 @@ function renderStats(){
     return `<div class="bar-wrap"><div class="bar${pct===null?' zero':''}" style="height:${height}px;" title="${pct===null?'veri yok':pct+'%'}"></div><div class="bar-day">${day}</div></div>`;
   }).join('')}</div>`;
 
+  const sdc = document.getElementById('screen-daily-chart');
+  const screenKeys = lastNDates(30).filter(k=> data.daily[k] && data.daily[k].ekranSuresiDk!=null);
+  if(screenKeys.length<1){
+    sdc.innerHTML = '<p class="empty-note">Henüz ekran süresi girişi yok.</p>';
+  }else{
+    const hrs = screenKeys.map(k=> data.daily[k].ekranSuresiDk/60);
+    const min = 0, max = Math.max(...hrs)+1;
+    const w=640,h=140,pad=24;
+    const xStep = screenKeys.length>1 ? (w-2*pad)/(screenKeys.length-1) : 0;
+    const yOf = v => h-pad-((v-min)/(max-min))*(h-2*pad);
+    const pts = hrs.map((v,i)=>`${pad+i*xStep},${yOf(v)}`).join(' ');
+    sdc.innerHTML = `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:${h}px;">
+      <polyline points="${pts}" fill="none" stroke="var(--rose)" stroke-width="2"/>
+      ${hrs.map((v,i)=>`<circle cx="${pad+i*xStep}" cy="${yOf(v)}" r="3" fill="var(--rose)"/>`).join('')}
+    </svg>`;
+  }
+
+  const swc = document.getElementById('screen-weekly-chart');
+  const last8Weeks = [...lastNWeekKeys(8)];
+  const weekAvgs = last8Weeks.map(wk=>{
+    const agg = computeWeeklyAgg(wk);
+    return {wk, avgH: agg.ekranOrtalamaDk!=null ? agg.ekranOrtalamaDk/60 : null};
+  });
+  if(weekAvgs.every(x=>x.avgH===null)){
+    swc.innerHTML = '<p class="empty-note">Henüz ekran süresi girişi yok.</p>';
+  }else{
+    const validVals = weekAvgs.filter(x=>x.avgH!==null).map(x=>x.avgH);
+    const maxH = Math.max(...validVals, 1)+0.5;
+    swc.innerHTML = `<div class="bars">${weekAvgs.map(x=>{
+      const label = new Date(x.wk).toLocaleDateString('tr-TR',{day:'numeric',month:'numeric'});
+      const height = x.avgH===null?2:Math.max(2,(x.avgH/maxH)*85);
+      return `<div class="bar-wrap"><div class="bar${x.avgH===null?' zero':''}" style="height:${height}px;" title="${x.avgH===null?'veri yok':x.avgH.toFixed(1)+' sa'}"></div><div class="bar-day">${label}</div></div>`;
+    }).join('')}</div>`;
+  }
+
   const wh = document.getElementById('weekly-history');
   const wKeys = [...lastNWeekKeys(8)].reverse();
   if(wKeys.length===0){
@@ -809,6 +887,21 @@ document.getElementById('today-dizi-bolum').addEventListener('input', e=>{
   d.diziBolumGun = e.target.value===''?0:parseInt(e.target.value,10);
   queueSave();
 });
+function updateEkranSuresi(){
+  const d = getDaily(todayKey());
+  const hInput = document.getElementById('today-ekran-saat');
+  const mInput = document.getElementById('today-ekran-dakika');
+  const h = hInput.value===''?null:parseInt(hInput.value,10);
+  const m = mInput.value===''?null:parseInt(mInput.value,10);
+  if(h==null && m==null){
+    d.ekranSuresiDk = null;
+  }else{
+    d.ekranSuresiDk = (h||0)*60 + (m||0);
+  }
+  queueSave();
+}
+document.getElementById('today-ekran-saat').addEventListener('input', updateEkranSuresi);
+document.getElementById('today-ekran-dakika').addEventListener('input', updateEkranSuresi);
 document.getElementById('add-task-btn').addEventListener('click',()=>{
   const titleInput = document.getElementById('new-task-title');
   const deadlineInput = document.getElementById('new-task-deadline');
