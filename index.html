@@ -33,30 +33,51 @@
     --ink-soft:#7B7189;
     --line:#EEE2CF;
     --surface:#FFFFFF;
+    --teal-text:var(--teal-deep);
     --sunrise:linear-gradient(135deg,var(--coral) 0%,var(--gold) 100%);
     --daybreak:linear-gradient(120deg,var(--night) 0%,var(--coral-deep) 55%,var(--gold) 100%);
     --journey:linear-gradient(90deg,var(--coral) 0%,var(--gold) 55%,var(--teal) 100%);
     --shadow-soft:0 10px 28px -14px rgba(70,40,15,.28);
   }
   @media (prefers-color-scheme: dark){
-    :root{
-      --paper:#221C30;
-      --bg:#171224;
-      --ink:#F3EEE4;
-      --ink-soft:#B4AABF;
-      --line:#332A44;
-      --surface:#2B2438;
-      --teal-bg:#1D3833;
-      --rose-bg:#3A2521;
-      --gold-bg:#3A2E17;
+    :root:not([data-theme="light"]){
+      --paper:#241E33;
+      --bg:#181322;
+      --ink:#F5F0E8;
+      --ink-soft:#BCB2C7;
+      --line:#3A3050;
+      --surface:#2D263D;
+      --teal-bg:#1E3B36;
+      --rose-bg:#3D2823;
+      --gold-bg:#3D3018;
       --shadow-soft:0 10px 28px -14px rgba(0,0,0,.55);
+      --teal-text:#82E3CE;
     }
-    body{
+    :root:not([data-theme="light"]) body{
       background:
         radial-gradient(circle at 12% 4%, rgba(255,182,72,.10), transparent 42%),
         radial-gradient(circle at 88% 2%, rgba(255,122,89,.08), transparent 40%),
         var(--bg);
     }
+  }
+  :root[data-theme="dark"]{
+    --paper:#241E33;
+    --bg:#181322;
+    --ink:#F5F0E8;
+    --ink-soft:#BCB2C7;
+    --line:#3A3050;
+    --surface:#2D263D;
+    --teal-bg:#1E3B36;
+    --rose-bg:#3D2823;
+    --gold-bg:#3D3018;
+    --shadow-soft:0 10px 28px -14px rgba(0,0,0,.55);
+    --teal-text:#82E3CE;
+  }
+  :root[data-theme="dark"] body{
+    background:
+      radial-gradient(circle at 12% 4%, rgba(255,182,72,.10), transparent 42%),
+      radial-gradient(circle at 88% 2%, rgba(255,122,89,.08), transparent 40%),
+      var(--bg);
   }
   *{box-sizing:border-box;}
   body{
@@ -92,6 +113,13 @@
     background:radial-gradient(circle at 35% 35%, #FFE9B8, var(--gold) 55%, transparent 72%);
     filter:blur(1px);opacity:.85;
   }
+  #theme-toggle{
+    position:absolute;top:14px;right:14px;z-index:2;
+    width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,249,239,.35);
+    background:rgba(255,249,239,.14);color:#FFF9EF;font-size:15px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;transition:background .15s;
+  }
+  #theme-toggle:hover{background:rgba(255,249,239,.26);}
   header .eyebrow{
     position:relative;z-index:1;
     font-size:11px;letter-spacing:.14em;text-transform:uppercase;
@@ -191,7 +219,7 @@
     display:flex;
     align-items:center;
     gap:9px;
-    color:var(--night);
+    color:var(--ink);
   }
   .card .sub{
     font-size:13px;
@@ -312,12 +340,12 @@
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
   input:disabled{opacity:.7;background:var(--line);cursor:not-allowed;}
   button#weight-edit-btn{
-    padding:8px 16px;border-radius:999px;border:1px solid var(--teal);background:var(--surface);color:var(--teal-deep);
+    padding:8px 16px;border-radius:999px;border:1px solid var(--teal);background:var(--surface);color:var(--teal-text);
     font:inherit;font-size:13px;font-weight:600;cursor:pointer;
   }
   .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;}
   .stat-box{background:var(--teal-bg);border-radius:14px;padding:12px 14px;}
-  .stat-box .num{font-family:'Fraunces',Georgia,serif;font-size:23px;font-weight:600;color:var(--teal-deep);}
+  .stat-box .num{font-family:'Fraunces',Georgia,serif;font-size:23px;font-weight:600;color:var(--teal-text);}
   .stat-box .lbl{font-size:12px;color:var(--ink-soft);margin-top:2px;}
   .bars{display:flex;align-items:flex-end;gap:4px;height:90px;}
   .bars .bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;}
@@ -326,10 +354,10 @@
   .bars .bar-day{font-size:9px;color:var(--ink-soft);margin-top:4px;}
   .week-row{padding:12px 0;border-top:1px solid var(--line);}
   .week-row:first-child{border-top:none;}
-  .week-row .wr-range{font-size:13px;font-weight:700;margin-bottom:8px;color:var(--night);}
+  .week-row .wr-range{font-size:13px;font-weight:700;margin-bottom:8px;color:var(--ink);}
   .wr-items{display:flex;flex-wrap:wrap;gap:6px;}
   .wr-pill{font-size:12px;padding:4px 10px;border-radius:999px;background:var(--rose-bg);color:var(--rose);font-weight:600;}
-  .wr-pill.hit{background:var(--teal-bg);color:var(--teal-deep);}
+  .wr-pill.hit{background:var(--teal-bg);color:var(--teal-text);}
   .empty-note{font-size:13px;color:var(--ink-soft);}
 
   @keyframes pop{0%{transform:scale(1);}45%{transform:scale(1.3);}100%{transform:scale(1);}}
@@ -355,6 +383,7 @@
 <div class="wrap">
   <header>
     <div class="hero-sun" aria-hidden="true"></div>
+    <button id="theme-toggle" aria-label="Tema değiştir" title="Tema değiştir">🌓</button>
     <svg class="hero-path" viewBox="0 0 400 56" preserveAspectRatio="none" aria-hidden="true">
       <path d="M0,40 C60,10 100,50 160,28 C220,6 260,46 320,24 C350,13 380,30 400,20 L400,56 L0,56 Z" fill="rgba(255,249,239,.10)"/>
       <path d="M0,44 C60,18 110,54 170,34 C230,14 270,50 330,30 C360,20 385,34 400,28" fill="none" stroke="rgba(255,249,239,.55)" stroke-width="2" stroke-dasharray="1,9" stroke-linecap="round"/>
@@ -393,7 +422,7 @@
         <button id="weight-save-btn" style="margin-left:auto;">Kaydet</button>
         <button id="weight-edit-btn" style="margin-left:auto;display:none;">Düzenle</button>
       </div>
-      <p id="weight-saved-note" style="font-size:12px;color:var(--teal-deep);margin:-4px 0 12px;display:none;">Bugün için kaydedildi.</p>
+      <p id="weight-saved-note" style="font-size:12px;color:var(--teal-text);margin:-4px 0 12px;display:none;">Bugün için kaydedildi.</p>
       <div id="weight-goal-info"></div>
       <div class="progress-track"><div class="progress-fill" id="weight-progress"></div></div>
       <div class="progress-label"><span id="weight-current-label"></span><span id="weight-target-label"></span></div>
@@ -1320,6 +1349,20 @@ document.getElementById('reset-stats-btn').addEventListener('click', async ()=>{
   await save();
   render();
 });
+
+function applyTheme(){
+  const saved = localStorage.getItem('panom-theme');
+  document.documentElement.setAttribute('data-theme', saved || 'auto');
+  const btn = document.getElementById('theme-toggle');
+  btn.textContent = saved==='light' ? '☀️' : saved==='dark' ? '🌙' : '🌓';
+}
+document.getElementById('theme-toggle').addEventListener('click', ()=>{
+  const cur = localStorage.getItem('panom-theme');
+  const next = cur==null ? 'light' : (cur==='light' ? 'dark' : null);
+  if(next) localStorage.setItem('panom-theme', next); else localStorage.removeItem('panom-theme');
+  applyTheme();
+});
+applyTheme();
 
 document.getElementById('daily').classList.add('visible');
 load();
