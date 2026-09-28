@@ -243,6 +243,11 @@
       <div class="progress-label"><span id="weight-current-label"></span><span id="weight-target-label"></span></div>
     </div>
     <div class="card">
+      <h2>Spor</h2>
+      <p class="sub">Her gün yapılması gerekmiyor — haftada 4/7 hedef, istatistik kısmında ayrı takip edilir</p>
+      <div class="row" id="sport-today-row"><label><input type="checkbox" id="sport-today-checkbox"><span>Bugün spor yaptım</span></label></div>
+    </div>
+    <div class="card">
       <h2>Günlük liste</h2>
       <p class="sub">Her gün sıfırlanır</p>
       <div id="daily-checklist"></div>
@@ -394,7 +399,6 @@ const DAY_NAMES = {mon:'Pzt',tue:'Sal',wed:'Çrş',thu:'Per',fri:'Cum',sat:'Cmt'
 const DAY_ORDER = ['mon','tue','wed','thu','fri','sat','sun'];
 
 const DAILY_ITEMS = [
-  {id:'spor', label:'Spor yaptım'},
   {id:'kahvalti', label:'Kahvaltı', hint:'Hafta içi, mesaiden önce 09:30\'a kadar'},
   {id:'kreatin', label:'Kreatin'},
   {id:'omega3', label:'Omega 3'},
@@ -462,6 +466,7 @@ function getDaily(key){
   if(!data.daily[key]){
     data.daily[key] = {};
     DAILY_ITEMS.forEach(i=>data.daily[key][i.id]=false);
+    data.daily[key].spor = false;
     data.daily[key].kilo = null;
     data.daily[key].kitapSayfaGun = 0;
     data.daily[key].ingKitapSayfaGun = 0;
@@ -578,6 +583,16 @@ function render(){
     goalInfoEl.className = 'goal-info none';
     goalInfoEl.textContent = 'Bugün için bir kilo hedefi tanımlı değil. Dönem hedefleri sekmesinden ekleyebilirsin.';
   }
+
+  const sportRow = document.getElementById('sport-today-row');
+  const sportCb = document.getElementById('sport-today-checkbox');
+  sportCb.checked = !!d.spor;
+  sportRow.classList.toggle('done', !!d.spor);
+  sportCb.onchange = e=>{
+    d.spor = e.target.checked;
+    sportRow.classList.toggle('done', e.target.checked);
+    queueSave();
+  };
 
   const dl = document.getElementById('daily-checklist');
   dl.innerHTML = '';
@@ -700,6 +715,21 @@ function lastNDates(n){
   }
   return arr;
 }
+function firstTrackedWeekKey(){
+  const keys = Object.keys(data.daily);
+  if(keys.length===0) return weekKey();
+  return weekKey(new Date(keys.sort()[0]));
+}
+function weekKeysSinceFirstTracked(){
+  const arr=[];
+  let cur = new Date(firstTrackedWeekKey());
+  const curWeekStart = new Date(weekKey());
+  while(cur <= curWeekStart){
+    arr.push(todayKey(cur));
+    cur.setDate(cur.getDate()+7);
+  }
+  return arr;
+}
 function lastNWeekKeys(n){
   const arr=[];
   const d=new Date();
@@ -804,7 +834,7 @@ function renderStats(){
   }
 
   const wh = document.getElementById('weekly-history');
-  const wKeys = [...lastNWeekKeys(8)].reverse();
+  const wKeys = weekKeysSinceFirstTracked().reverse();
   if(wKeys.length===0){
     wh.innerHTML = '<p class="empty-note">Henüz haftalık veri yok.</p>';
   }else{
