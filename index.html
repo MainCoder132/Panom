@@ -185,6 +185,7 @@
   .goal-item .del{background:none;border:none;color:var(--ink-soft);cursor:pointer;font-size:16px;padding:2px 6px;}
   .weekrange{font-size:12px;color:var(--ink-soft);margin:-14px 0 18px;}
   .save-note{font-size:12px;color:var(--ink-soft);text-align:center;margin-top:24px;}
+  .reset-link{background:none;border:none;color:var(--rose);font-size:12px;cursor:pointer;text-decoration:underline;}
   .toast{
     position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);
     background:var(--forest-deep);color:#fff;padding:10px 18px;border-radius:8px;font-size:14px;
@@ -268,6 +269,9 @@
         </div>
       </div>
     </div>
+    <p style="text-align:center;margin-top:4px;">
+      <button id="reset-daily-btn" class="reset-link">Bugünün verilerini sıfırla</button>
+    </p>
   </section>
 
   <section id="weekly">
@@ -313,6 +317,9 @@
       <h2>Ev işleri ve düzen</h2>
       <div id="weekly-checklist"></div>
     </div>
+    <p style="text-align:center;margin-top:4px;">
+      <button id="reset-weekly-btn" class="reset-link">Bu haftanın verilerini sıfırla</button>
+    </p>
   </section>
 
   <section id="period">
@@ -337,6 +344,9 @@
         <button id="add-task-btn">Ekle</button>
       </div>
     </div>
+    <p style="text-align:center;margin-top:4px;">
+      <button id="reset-period-btn" class="reset-link">Hedefleri sıfırla</button>
+    </p>
   </section>
 
   <section id="stats">
@@ -369,12 +379,12 @@
       <p class="sub">Geçmiş haftalar, hedefi tutturup tutturmadığın</p>
       <div id="weekly-history"></div>
     </div>
+    <p style="text-align:center;margin-top:4px;">
+      <button id="reset-stats-btn" class="reset-link">Tüm geçmiş verileri sıfırla</button>
+    </p>
   </section>
 
   <p class="save-note" id="save-note">Yükleniyor…</p>
-  <p style="text-align:center;margin-top:10px;">
-    <button id="reset-btn" style="background:none;border:none;color:var(--rose);font-size:12px;cursor:pointer;text-decoration:underline;">Tüm verileri sıfırla</button>
-  </p>
 </div>
 <div class="toast" id="toast"></div>
 
@@ -952,9 +962,32 @@ document.querySelectorAll('.tab-btn').forEach(btn=>{
   });
 });
 
-document.getElementById('reset-btn').addEventListener('click', async ()=>{
-  if(!confirm('Tüm verileri silmek istediğine emin misin? Bu geri alınamaz.')) return;
-  data = defaultData();
+document.getElementById('reset-daily-btn').addEventListener('click', async ()=>{
+  if(!confirm('Bugünün verilerini (kilo, günlük liste, spor, sayfa/bölüm/ekran sayıları) silmek istediğine emin misin?')) return;
+  delete data.daily[todayKey()];
+  await save();
+  render();
+});
+
+document.getElementById('reset-weekly-btn').addEventListener('click', async ()=>{
+  if(!confirm('Bu haftanın verilerini (çamaşır, çarşaf, para hesabı) silmek istediğine emin misin?')) return;
+  delete data.weekly[weekKey()];
+  await save();
+  render();
+});
+
+document.getElementById('reset-period-btn').addEventListener('click', async ()=>{
+  if(!confirm('Tüm kilo hedeflerini ve dönem görevlerini silmek istediğine emin misin?')) return;
+  data.weightGoals = [];
+  data.periodTasks = [];
+  await save();
+  render();
+});
+
+document.getElementById('reset-stats-btn').addEventListener('click', async ()=>{
+  if(!confirm('Tüm günlük ve haftalık geçmiş verilerini silmek istediğine emin misin? Bu geri alınamaz.')) return;
+  data.daily = {};
+  data.weekly = {};
   await save();
   render();
 });
