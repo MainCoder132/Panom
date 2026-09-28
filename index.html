@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Panom — Yolculuk</title>
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#E15A3B">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -26,10 +32,31 @@
     --ink:#2A2438;
     --ink-soft:#7B7189;
     --line:#EEE2CF;
+    --surface:#FFFFFF;
     --sunrise:linear-gradient(135deg,var(--coral) 0%,var(--gold) 100%);
     --daybreak:linear-gradient(120deg,var(--night) 0%,var(--coral-deep) 55%,var(--gold) 100%);
     --journey:linear-gradient(90deg,var(--coral) 0%,var(--gold) 55%,var(--teal) 100%);
     --shadow-soft:0 10px 28px -14px rgba(70,40,15,.28);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --paper:#221C30;
+      --bg:#171224;
+      --ink:#F3EEE4;
+      --ink-soft:#B4AABF;
+      --line:#332A44;
+      --surface:#2B2438;
+      --teal-bg:#1D3833;
+      --rose-bg:#3A2521;
+      --gold-bg:#3A2E17;
+      --shadow-soft:0 10px 28px -14px rgba(0,0,0,.55);
+    }
+    body{
+      background:
+        radial-gradient(circle at 12% 4%, rgba(255,182,72,.10), transparent 42%),
+        radial-gradient(circle at 88% 2%, rgba(255,122,89,.08), transparent 40%),
+        var(--bg);
+    }
   }
   *{box-sizing:border-box;}
   body{
@@ -86,10 +113,28 @@
   }
   header p#today-label{
     position:relative;z-index:1;
-    margin:0;
+    margin:0 0 4px;
     color:rgba(255,249,239,.78);
     font-size:13px;
     font-weight:600;
+  }
+  header.tod-dawn{background:var(--daybreak);}
+  header.tod-day{background:linear-gradient(120deg,#1E6459 0%,#2F9086 45%,#FFD98C 100%);}
+  header.tod-dusk{background:linear-gradient(120deg,#2A1B3A 0%,#C1554A 45%,#FF9E5E 100%);}
+  header.tod-night{background:linear-gradient(120deg,#0E0A1C 0%,#241B3A 55%,#3A2E5C 100%);}
+  .hero-top{position:relative;z-index:1;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;}
+  .hero-text{min-width:0;flex:1;}
+  .hero-ring{position:relative;width:66px;height:66px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+  .hero-ring svg{width:66px;height:66px;transform:rotate(-90deg);}
+  .hero-ring .ring-track{fill:none;stroke:rgba(255,249,239,.22);stroke-width:7;}
+  .hero-ring .ring-fill{fill:none;stroke:#FFF9EF;stroke-width:7;stroke-linecap:round;transition:stroke-dashoffset .5s ease;}
+  .hero-ring-label{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  .hero-ring-label span{font-family:'Fraunces',Georgia,serif;font-size:16px;font-weight:600;color:#FFF9EF;line-height:1;}
+  .hero-ring-label small{font-size:8px;color:rgba(255,249,239,.75);text-transform:uppercase;letter-spacing:.06em;margin-top:2px;}
+  .streak-badge{
+    position:relative;z-index:1;display:inline-flex;align-items:center;gap:6px;
+    margin-top:10px;padding:5px 12px;border-radius:999px;
+    background:rgba(255,249,239,.16);color:#FFF9EF;font-size:12px;font-weight:700;
   }
 
   nav{
@@ -126,8 +171,9 @@
     background:var(--sunrise);
     box-shadow:0 8px 18px -8px rgba(225,90,59,.55);
   }
-  section{display:none;padding-top:26px;}
+  section{display:none;padding-top:26px;opacity:0;transform:translateY(8px);transition:opacity .25s ease,transform .25s ease;}
   section.active{display:block;}
+  section.active.visible{opacity:1;transform:translateY(0);}
 
   .card{
     background:var(--paper);
@@ -182,7 +228,7 @@
     padding:9px 11px;
     border:1px solid var(--line);
     border-radius:10px;
-    background:#fff;
+    background:var(--surface);
     color:var(--ink);
     width:100%;
     transition:border-color .15s,box-shadow .15s;
@@ -203,7 +249,7 @@
     padding:10px 0;
     border-radius:10px;
     border:1px solid var(--line);
-    background:#fff;
+    background:var(--surface);
     font:inherit;
     font-size:13px;
     cursor:pointer;
@@ -221,7 +267,7 @@
   .counter{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
   .counter button{
     width:32px;height:32px;border-radius:8px;border:1px solid var(--line);
-    background:#fff;font-size:16px;cursor:pointer;color:var(--ink);
+    background:var(--surface);font-size:16px;cursor:pointer;color:var(--ink);
   }
   .counter .val{font-size:20px;font-weight:600;min-width:30px;text-align:center;}
   .task{
@@ -266,7 +312,7 @@
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
   input:disabled{opacity:.7;background:var(--line);cursor:not-allowed;}
   button#weight-edit-btn{
-    padding:8px 16px;border-radius:999px;border:1px solid var(--teal);background:#fff;color:var(--teal-deep);
+    padding:8px 16px;border-radius:999px;border:1px solid var(--teal);background:var(--surface);color:var(--teal-deep);
     font:inherit;font-size:13px;font-weight:600;cursor:pointer;
   }
   .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;}
@@ -285,6 +331,24 @@
   .wr-pill{font-size:12px;padding:4px 10px;border-radius:999px;background:var(--rose-bg);color:var(--rose);font-weight:600;}
   .wr-pill.hit{background:var(--teal-bg);color:var(--teal-deep);}
   .empty-note{font-size:13px;color:var(--ink-soft);}
+
+  @keyframes pop{0%{transform:scale(1);}45%{transform:scale(1.3);}100%{transform:scale(1);}}
+  input[type=checkbox]:checked{animation:pop .28s ease;}
+
+  .confetti-piece{position:fixed;top:18%;width:8px;height:8px;border-radius:2px;z-index:60;pointer-events:none;animation:confetti-fall 1.3s ease-out forwards;}
+  @keyframes confetti-fall{
+    0%{transform:translate(0,0) rotate(0deg);opacity:1;}
+    100%{transform:translate(var(--dx,0px),420px) rotate(360deg);opacity:0;}
+  }
+
+  .muscle-filter{display:flex;gap:6px;margin-bottom:12px;}
+  .muscle-filter button{
+    font:inherit;font-size:12px;font-weight:600;padding:6px 13px;border-radius:999px;
+    border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);cursor:pointer;transition:all .15s;
+  }
+  .muscle-filter button.active{
+    background:linear-gradient(135deg,var(--teal),var(--teal-deep));border-color:var(--teal-deep);color:#fff;
+  }
 </style>
 </head>
 <body>
@@ -295,10 +359,22 @@
       <path d="M0,40 C60,10 100,50 160,28 C220,6 260,46 320,24 C350,13 380,30 400,20 L400,56 L0,56 Z" fill="rgba(255,249,239,.10)"/>
       <path d="M0,44 C60,18 110,54 170,34 C230,14 270,50 330,30 C360,20 385,34 400,28" fill="none" stroke="rgba(255,249,239,.55)" stroke-width="2" stroke-dasharray="1,9" stroke-linecap="round"/>
     </svg>
-    <p class="eyebrow">Yolculuk</p>
-    <h1>Panom</h1>
-    <p class="hero-tagline">Her gün, bir adım daha iyiye.</p>
-    <p id="today-label"></p>
+    <div class="hero-top">
+      <div class="hero-text">
+        <p class="eyebrow">Yolculuk</p>
+        <h1>Panom</h1>
+        <p class="hero-tagline">Her gün, bir adım daha iyiye.</p>
+        <p id="today-label"></p>
+        <span class="streak-badge" id="streak-badge" style="display:none;">🔥 <span id="streak-count">0</span> gün üst üste</span>
+      </div>
+      <div class="hero-ring" aria-hidden="true">
+        <svg viewBox="0 0 66 66">
+          <circle class="ring-track" cx="33" cy="33" r="27"></circle>
+          <circle class="ring-fill" id="hero-ring-fill" cx="33" cy="33" r="27" stroke-dasharray="169.6" stroke-dashoffset="169.6"></circle>
+        </svg>
+        <div class="hero-ring-label"><span id="hero-ring-pct">0%</span><small>bugün</small></div>
+      </div>
+    </div>
   </header>
   <nav>
     <button class="tab-btn active" data-tab="daily"><span class="ico">🌅</span>Bugün</button>
@@ -449,7 +525,11 @@
     </div>
     <div class="card">
       <h2>💪 Kas grupları</h2>
-      <p class="sub">Spor günlerinde hangi bölgeyi kaç kez çalıştırdın, tüm zamanlar</p>
+      <p class="sub">Spor günlerinde hangi bölgeyi kaç kez çalıştırdın</p>
+      <div class="muscle-filter" id="muscle-filter">
+        <button data-range="30" class="active">Son 30 gün</button>
+        <button data-range="all">Tüm zamanlar</button>
+      </div>
       <div id="muscle-chart"></div>
     </div>
     <div class="card">
@@ -602,6 +682,41 @@ function fmtHM(mins){
   const h = Math.floor(mins/60), m = Math.round(mins%60);
   return h+' sa '+m+' dk';
 }
+function timeOfDayClass(){
+  const h = new Date().getHours();
+  if(h>=5 && h<8) return 'tod-dawn';
+  if(h>=8 && h<17) return 'tod-day';
+  if(h>=17 && h<20) return 'tod-dusk';
+  return 'tod-night';
+}
+function computeStreak(){
+  let cur = new Date();
+  if(dailyCompletionPct(todayKey(cur))===null){
+    cur.setDate(cur.getDate()-1);
+  }
+  let streak = 0;
+  while(true){
+    const key = todayKey(cur);
+    if(dailyCompletionPct(key)===null) break;
+    streak++;
+    cur.setDate(cur.getDate()-1);
+  }
+  return streak;
+}
+let celebratedDay = null;
+function burstConfetti(){
+  const colors = ['var(--coral)','var(--gold)','var(--teal)'];
+  for(let i=0;i<26;i++){
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.left = (42+Math.random()*16)+'%';
+    el.style.background = colors[i%3];
+    el.style.animationDelay = (Math.random()*0.2)+'s';
+    el.style.setProperty('--dx', (Math.random()*200-100)+'px');
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(), 1500);
+  }
+}
 function computeWeeklyAgg(wKey){
   const sportDays = {};
   let sportCount=0, kitapSayfa=0, kitapGun=0, dizi=0, ingKitapSayfa=0, ingKitapGun=0;
@@ -643,6 +758,7 @@ async function load(){
   render();
 }
 let weightUnlocked = false;
+let muscleRange = '30';
 let saveTimer=null;
 async function save(){
   document.getElementById('save-note').textContent = 'Kaydediliyor…';
@@ -664,9 +780,27 @@ function render(){
   const tKey = todayKey();
   const wKey = weekKey();
   document.getElementById('today-label').textContent = new Date().toLocaleDateString('tr-TR',{weekday:'long',day:'numeric',month:'long'});
+  document.querySelector('header').className = timeOfDayClass();
 
   const d = getDaily(tKey);
   const w = getWeekly(wKey);
+
+  const todayDoneCount = DAILY_ITEMS.filter(it=>d[it.id]).length + (d.kilo!=null?1:0) + (d.spor?1:0);
+  const todayTotalCount = DAILY_ITEMS.length + 2;
+  const todayPct = Math.round((todayDoneCount/todayTotalCount)*100);
+  const RING_C = 169.6;
+  document.getElementById('hero-ring-fill').style.strokeDashoffset = RING_C - (todayPct/100)*RING_C;
+  document.getElementById('hero-ring-pct').textContent = todayPct+'%';
+  if(todayPct===100 && celebratedDay!==tKey){
+    celebratedDay = tKey;
+    burstConfetti();
+    showToast('🎉 Bugünü tamamladın!');
+  }
+
+  const streak = computeStreak();
+  const streakBadge = document.getElementById('streak-badge');
+  document.getElementById('streak-count').textContent = streak;
+  streakBadge.style.display = streak>0 ? 'inline-flex' : 'none';
 
   const weightInput = document.getElementById('weight-input');
   const saveBtn = document.getElementById('weight-save-btn');
@@ -905,24 +1039,34 @@ function renderStats(){
 
   const wc = document.getElementById('weight-chart');
   if(weightEntries.length<1){
-    wc.innerHTML = '<p class="empty-note">Henüz kilo girişi yok.</p>';
+    wc.innerHTML = '<p class="empty-note">Henüz kilo girişi yok. Yolculuğun ilk adımını bugün at ⚖️</p>';
   }else{
     const vals = weightEntries.map(k=>data.daily[k].kilo);
     const allVals = vals.concat(activeGoal ? [activeGoal.targetWeight] : []);
     const min = Math.min(...allVals)-0.3, max = Math.max(...allVals)+0.3;
-    const w=640,h=140,pad=24;
+    const w=640,h=150,pad=26;
     const xStep = weightEntries.length>1 ? (w-2*pad)/(weightEntries.length-1) : 0;
     const yOf = v => h-pad-((v-min)/(max-min))*(h-2*pad);
     const pts = vals.map((v,i)=>`${pad+i*xStep},${yOf(v)}`).join(' ');
+    const gridLines = [min, (min+max)/2, max].map(v=>{
+      const y = yOf(v);
+      return `<line x1="${pad}" y1="${y}" x2="${w-pad}" y2="${y}" stroke="var(--line)" stroke-width="1"/>
+      <text x="${pad-6}" y="${y+3}" text-anchor="end" font-size="9" fill="var(--ink-soft)">${v.toFixed(1)}</text>`;
+    }).join('');
+    const fmtShort = k => new Date(k).toLocaleDateString('tr-TR',{day:'numeric',month:'numeric'});
+    const dateLabels = `<text x="${pad}" y="${h-4}" font-size="9" fill="var(--ink-soft)">${fmtShort(weightEntries[0])}</text>
+      <text x="${w-pad}" y="${h-4}" text-anchor="end" font-size="9" fill="var(--ink-soft)">${fmtShort(weightEntries[weightEntries.length-1])}</text>`;
     const targetLine = activeGoal ? (()=>{
       const targetY = yOf(activeGoal.targetWeight);
       return `<line x1="${pad}" y1="${targetY}" x2="${w-pad}" y2="${targetY}" stroke="var(--gold-deep)" stroke-width="1" stroke-dasharray="4,4"/>
       <text x="${w-pad}" y="${targetY-6}" text-anchor="end" font-size="11" fill="var(--gold-deep)">hedef ${activeGoal.targetWeight}</text>`;
     })() : '';
     wc.innerHTML = `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:${h}px;">
+      ${gridLines}
       ${targetLine}
       <polyline points="${pts}" fill="none" stroke="var(--teal)" stroke-width="2"/>
-      ${vals.map((v,i)=>`<circle cx="${pad+i*xStep}" cy="${yOf(v)}" r="3" fill="var(--teal)"/>`).join('')}
+      ${vals.map((v,i)=>`<circle cx="${pad+i*xStep}" cy="${yOf(v)}" r="3.5" fill="var(--teal)"><title>${fmtShort(weightEntries[i])}: ${v} kg</title></circle>`).join('')}
+      ${dateLabels}
     </svg>`;
   }
 
@@ -938,7 +1082,8 @@ function renderStats(){
   const mc = document.getElementById('muscle-chart');
   const muscleTotals = {};
   MUSCLE_GROUPS.forEach(m=>muscleTotals[m.id]=0);
-  Object.keys(data.daily).forEach(k=>{
+  const muscleKeys = muscleRange==='all' ? Object.keys(data.daily) : lastNDates(30);
+  muscleKeys.forEach(k=>{
     const rec = data.daily[k];
     if(rec && rec.sporBolgeler){
       MUSCLE_GROUPS.forEach(m=>{ if(rec.sporBolgeler[m.id]) muscleTotals[m.id]++; });
@@ -946,7 +1091,7 @@ function renderStats(){
   });
   const muscleMax = Math.max(...MUSCLE_GROUPS.map(m=>muscleTotals[m.id]));
   if(muscleMax===0){
-    mc.innerHTML = '<p class="empty-note">Henüz spor günü + bölge işaretlenmedi.</p>';
+    mc.innerHTML = '<p class="empty-note">Henüz spor günü işaretlenip bölge seçilmedi. İlk kaydını bugün at 💪</p>';
   }else{
     mc.innerHTML = `<div class="bars">${MUSCLE_GROUPS.map(m=>{
       const cnt = muscleTotals[m.id];
@@ -958,7 +1103,7 @@ function renderStats(){
   const sdc = document.getElementById('screen-daily-chart');
   const screenKeys = lastNDates(30).filter(k=> data.daily[k] && data.daily[k].ekranSuresiDk!=null);
   if(screenKeys.length<1){
-    sdc.innerHTML = '<p class="empty-note">Henüz ekran süresi girişi yok.</p>';
+    sdc.innerHTML = '<p class="empty-note">Henüz ekran süresi girişi yok. İlk kaydını bugün at ⏳</p>';
   }else{
     const hrs = screenKeys.map(k=> data.daily[k].ekranSuresiDk/60);
     const min = 0, max = Math.max(...hrs)+1;
@@ -966,9 +1111,10 @@ function renderStats(){
     const xStep = screenKeys.length>1 ? (w-2*pad)/(screenKeys.length-1) : 0;
     const yOf = v => h-pad-((v-min)/(max-min))*(h-2*pad);
     const pts = hrs.map((v,i)=>`${pad+i*xStep},${yOf(v)}`).join(' ');
+    const fmtShort = k => new Date(k).toLocaleDateString('tr-TR',{day:'numeric',month:'numeric'});
     sdc.innerHTML = `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:${h}px;">
       <polyline points="${pts}" fill="none" stroke="var(--rose)" stroke-width="2"/>
-      ${hrs.map((v,i)=>`<circle cx="${pad+i*xStep}" cy="${yOf(v)}" r="3" fill="var(--rose)"/>`).join('')}
+      ${hrs.map((v,i)=>`<circle cx="${pad+i*xStep}" cy="${yOf(v)}" r="3" fill="var(--rose)"><title>${fmtShort(screenKeys[i])}: ${v.toFixed(1)} sa</title></circle>`).join('')}
     </svg>`;
   }
 
@@ -979,7 +1125,7 @@ function renderStats(){
     return {wk, avgH: agg.ekranOrtalamaDk!=null ? agg.ekranOrtalamaDk/60 : null};
   });
   if(weekAvgs.every(x=>x.avgH===null)){
-    swc.innerHTML = '<p class="empty-note">Henüz ekran süresi girişi yok.</p>';
+    swc.innerHTML = '<p class="empty-note">Henüz ekran süresi girişi yok. İlk kaydını bugün at ⏳</p>';
   }else{
     const validVals = weekAvgs.filter(x=>x.avgH!==null).map(x=>x.avgH);
     const maxH = Math.max(...validVals, 1)+0.5;
@@ -993,7 +1139,7 @@ function renderStats(){
   const wh = document.getElementById('weekly-history');
   const wKeys = weekKeysSinceFirstTracked().reverse();
   if(wKeys.length===0){
-    wh.innerHTML = '<p class="empty-note">Henüz haftalık veri yok.</p>';
+    wh.innerHTML = '<p class="empty-note">Henüz haftalık veri yok. Bu hafta yolculuğun ilk durağı 🧭</p>';
   }else{
     wh.innerHTML = wKeys.map(wk=>{
       const agg = computeWeeklyAgg(wk);
@@ -1099,13 +1245,49 @@ document.getElementById('add-task-btn').addEventListener('click',()=>{
   queueSave(); render();
 });
 
+const TAB_ORDER = ['daily','weekly','period','stats'];
+function switchTab(tabName){
+  const btn = document.querySelector(`.tab-btn[data-tab="${tabName}"]`);
+  if(!btn) return;
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('section').forEach(s=>{s.classList.remove('active','visible');});
+  btn.classList.add('active');
+  const sec = document.getElementById(tabName);
+  sec.classList.add('active');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>sec.classList.add('visible')));
+  render();
+}
 document.querySelectorAll('.tab-btn').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-    document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
+  btn.addEventListener('click',()=> switchTab(btn.dataset.tab));
+});
+
+let touchStartX=null, touchStartY=null;
+const wrapEl = document.querySelector('.wrap');
+wrapEl.addEventListener('touchstart', e=>{
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+}, {passive:true});
+wrapEl.addEventListener('touchend', e=>{
+  if(touchStartX==null) return;
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  const dy = e.changedTouches[0].clientY - touchStartY;
+  if(Math.abs(dx)>60 && Math.abs(dy)<60){
+    const activeBtn = document.querySelector('.tab-btn.active');
+    const idx = TAB_ORDER.indexOf(activeBtn.dataset.tab);
+    let newIdx = idx;
+    if(dx<0 && idx<TAB_ORDER.length-1) newIdx = idx+1;
+    if(dx>0 && idx>0) newIdx = idx-1;
+    if(newIdx!==idx) switchTab(TAB_ORDER[newIdx]);
+  }
+  touchStartX=null; touchStartY=null;
+}, {passive:true});
+
+document.querySelectorAll('#muscle-filter button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('#muscle-filter button').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
-    document.getElementById(btn.dataset.tab).classList.add('active');
-    render();
+    muscleRange = btn.dataset.range;
+    renderStats();
   });
 });
 
@@ -1139,6 +1321,7 @@ document.getElementById('reset-stats-btn').addEventListener('click', async ()=>{
   render();
 });
 
+document.getElementById('daily').classList.add('visible');
 load();
 </script>
 </body>
