@@ -3,83 +3,149 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Panom</title>
+<title>Panom — Yolculuk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#EDEFE4;
-    --paper:#F8F8F2;
-    --ink:#242A1F;
-    --ink-soft:#5B6152;
-    --line:#D8D9C9;
-    --forest:#3F6C4E;
-    --forest-deep:#2A4B34;
-    --ochre:#B8863B;
-    --ochre-deep:#7C5B27;
-    --rose:#A9584C;
-    --rose-bg:#F3E4DF;
-    --forest-bg:#E4EDE3;
-    --ochre-bg:#F3E9D4;
+    --night:#241B3A;
+    --night-deep:#150F24;
+    --coral:#FF7A59;
+    --coral-deep:#E15A3B;
+    --gold:#FFB648;
+    --gold-deep:#D98C1F;
+    --teal:#2F9086;
+    --teal-deep:#1E6459;
+    --teal-bg:#E3F2EE;
+    --rose:#C1554A;
+    --rose-bg:#F7E3DE;
+    --gold-bg:#FDF0DA;
+    --paper:#FFFDF9;
+    --bg:#FBF4E8;
+    --ink:#2A2438;
+    --ink-soft:#7B7189;
+    --line:#EEE2CF;
+    --sunrise:linear-gradient(135deg,var(--coral) 0%,var(--gold) 100%);
+    --daybreak:linear-gradient(120deg,var(--night) 0%,var(--coral-deep) 55%,var(--gold) 100%);
+    --journey:linear-gradient(90deg,var(--coral) 0%,var(--gold) 55%,var(--teal) 100%);
+    --shadow-soft:0 10px 28px -14px rgba(70,40,15,.28);
   }
   *{box-sizing:border-box;}
   body{
     margin:0;
-    background:var(--bg);
+    background:
+      radial-gradient(circle at 12% 4%, rgba(255,182,72,.22), transparent 42%),
+      radial-gradient(circle at 88% 2%, rgba(255,122,89,.16), transparent 40%),
+      var(--bg);
     color:var(--ink);
-    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-    padding:0 16px 60px;
+    font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    padding:0 16px 64px;
+    -webkit-font-smoothing:antialiased;
   }
+  ::selection{background:var(--gold);color:var(--night);}
   .wrap{max-width:720px;margin:0 auto;}
+
   header{
-    padding:36px 4px 20px;
+    position:relative;
+    margin-top:20px;
+    padding:38px 26px 26px;
+    border-radius:26px;
+    background:var(--daybreak);
+    color:#FFF9EF;
+    overflow:hidden;
+    box-shadow:0 16px 36px -16px rgba(36,27,58,.55);
+  }
+  header .hero-path{
+    position:absolute;left:0;right:0;bottom:-2px;width:100%;height:56px;
+    display:block;opacity:.9;
+  }
+  header .hero-sun{
+    position:absolute;top:-30px;right:-30px;width:130px;height:130px;border-radius:50%;
+    background:radial-gradient(circle at 35% 35%, #FFE9B8, var(--gold) 55%, transparent 72%);
+    filter:blur(1px);opacity:.85;
+  }
+  header .eyebrow{
+    position:relative;z-index:1;
+    font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+    color:rgba(255,249,239,.75);margin:0 0 6px;font-weight:600;
   }
   header h1{
-    font-family:Georgia,'Iowan Old Style',serif;
-    font-weight:400;
-    font-size:32px;
-    margin:0 0 4px;
+    position:relative;z-index:1;
+    font-family:'Fraunces',Georgia,serif;
+    font-weight:600;
+    font-size:34px;
+    margin:0 0 6px;
     letter-spacing:-0.01em;
   }
-  header p{
+  header .hero-tagline{
+    position:relative;z-index:1;
+    margin:0 0 14px;
+    color:rgba(255,249,239,.88);
+    font-size:14px;
+  }
+  header p#today-label{
+    position:relative;z-index:1;
     margin:0;
-    color:var(--ink-soft);
-    font-size:14px;
-  }
-  nav{
-    display:flex;
-    gap:4px;
-    margin:20px 0 0;
-    border-bottom:1px solid var(--line);
-  }
-  nav button{
-    font:inherit;
-    font-size:14px;
-    background:none;
-    border:none;
-    padding:10px 16px;
-    cursor:pointer;
-    color:var(--ink-soft);
-    border-bottom:2px solid transparent;
-    margin-bottom:-1px;
-  }
-  nav button.active{
-    color:var(--forest-deep);
-    border-bottom:2px solid var(--forest);
+    color:rgba(255,249,239,.78);
+    font-size:13px;
     font-weight:600;
   }
-  section{display:none;padding-top:24px;}
+
+  nav{
+    display:flex;
+    gap:6px;
+    margin:18px 0 0;
+    padding:6px;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:18px;
+    box-shadow:var(--shadow-soft);
+  }
+  nav button{
+    flex:1;
+    font:inherit;
+    font-size:12.5px;
+    font-weight:600;
+    background:none;
+    border:none;
+    border-radius:13px;
+    padding:11px 6px;
+    cursor:pointer;
+    color:var(--ink-soft);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:4px;
+    transition:background .2s,color .2s,transform .15s;
+  }
+  nav button .ico{font-size:16px;line-height:1;}
+  nav button:hover{color:var(--ink);}
+  nav button.active{
+    color:#fff;
+    background:var(--sunrise);
+    box-shadow:0 8px 18px -8px rgba(225,90,59,.55);
+  }
+  section{display:none;padding-top:26px;}
   section.active{display:block;}
+
   .card{
     background:var(--paper);
     border:1px solid var(--line);
-    border-radius:10px;
-    padding:18px 20px;
-    margin-bottom:14px;
+    border-radius:20px;
+    padding:20px 22px;
+    margin-bottom:16px;
+    box-shadow:var(--shadow-soft);
   }
   .card h2{
-    font-family:Georgia,'Iowan Old Style',serif;
-    font-weight:400;
-    font-size:18px;
+    font-family:'Fraunces',Georgia,serif;
+    font-weight:600;
+    font-size:19px;
     margin:0 0 4px;
+    display:flex;
+    align-items:center;
+    gap:9px;
+    color:var(--night);
   }
   .card .sub{
     font-size:13px;
@@ -90,7 +156,7 @@
     display:flex;
     align-items:center;
     justify-content:space-between;
-    padding:10px 0;
+    padding:11px 0;
     border-top:1px solid var(--line);
   }
   .row:first-of-type{border-top:none;}
@@ -104,8 +170,8 @@
   }
   .row .hint{font-size:12px;color:var(--ink-soft);display:block;margin-top:1px;}
   input[type=checkbox]{
-    width:19px;height:19px;
-    accent-color:var(--forest);
+    width:20px;height:20px;
+    accent-color:var(--teal);
     cursor:pointer;
     flex-shrink:0;
   }
@@ -113,42 +179,48 @@
   input[type=number], input[type=text], input[type=date]{
     font:inherit;
     font-size:15px;
-    padding:8px 10px;
+    padding:9px 11px;
     border:1px solid var(--line);
-    border-radius:6px;
+    border-radius:10px;
     background:#fff;
     color:var(--ink);
     width:100%;
+    transition:border-color .15s,box-shadow .15s;
+  }
+  input[type=number]:focus, input[type=text]:focus, input[type=date]:focus{
+    outline:none;border-color:var(--teal);box-shadow:0 0 0 3px var(--teal-bg);
   }
   .weight-row{display:flex;align-items:center;gap:14px;margin-bottom:12px;}
   .weight-row input{max-width:110px;}
   .progress-track{
-    height:8px;border-radius:4px;background:var(--line);overflow:hidden;
+    height:9px;border-radius:6px;background:var(--line);overflow:hidden;
   }
-  .progress-fill{height:100%;background:var(--forest);border-radius:4px;transition:width .3s;}
-  .progress-label{display:flex;justify-content:space-between;font-size:12px;color:var(--ink-soft);margin-top:6px;}
+  .progress-fill{height:100%;background:var(--journey);border-radius:6px;transition:width .4s ease;}
+  .progress-label{display:flex;justify-content:space-between;font-size:12px;color:var(--ink-soft);margin-top:7px;}
   .day-toggles{display:flex;gap:8px;margin-bottom:14px;}
   .day-toggles button{
     flex:1;
     padding:10px 0;
-    border-radius:6px;
+    border-radius:10px;
     border:1px solid var(--line);
     background:#fff;
     font:inherit;
     font-size:13px;
     cursor:pointer;
     color:var(--ink-soft);
+    transition:all .15s;
   }
   .day-toggles button:disabled{cursor:default;opacity:1;}
   .day-toggles button.on{
-    background:var(--forest-bg);
-    border-color:var(--forest);
-    color:var(--forest-deep);
-    font-weight:600;
+    background:linear-gradient(135deg,var(--teal),var(--teal-deep));
+    border-color:var(--teal-deep);
+    color:#fff;
+    font-weight:700;
+    box-shadow:0 6px 14px -6px rgba(30,100,89,.5);
   }
   .counter{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
   .counter button{
-    width:32px;height:32px;border-radius:6px;border:1px solid var(--line);
+    width:32px;height:32px;border-radius:8px;border:1px solid var(--line);
     background:#fff;font-size:16px;cursor:pointer;color:var(--ink);
   }
   .counter .val{font-size:20px;font-weight:600;min-width:30px;text-align:center;}
@@ -158,7 +230,7 @@
   .task:first-of-type{border-top:none;}
   .task .info{flex:1;}
   .task .title{font-size:15px;}
-  .task .deadline{font-size:12px;color:var(--rose);margin-top:2px;}
+  .task .deadline{font-size:12px;color:var(--rose);margin-top:2px;font-weight:600;}
   .task.done .title{color:var(--ink-soft);text-decoration:line-through;text-decoration-color:var(--line);}
   .task.done .deadline{color:var(--ink-soft);}
   .task .del{
@@ -168,14 +240,12 @@
   .add-task input[type=text]{flex:2;min-width:140px;}
   .add-task input[type=date]{flex:1;min-width:130px;}
   .add-task input[type=number]{flex:1;min-width:90px;}
-  .add-task button{
-    padding:8px 16px;border-radius:6px;border:1px solid var(--forest);background:var(--forest);color:#fff;
-    font:inherit;font-size:14px;cursor:pointer;
+  .add-task button, .weight-row button#weight-save-btn{
+    padding:9px 18px;border-radius:999px;border:none;background:var(--sunrise);color:#fff;
+    font:inherit;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 8px 18px -8px rgba(225,90,59,.55);
+    transition:transform .15s,box-shadow .15s;
   }
-  .weight-row button#weight-save-btn{
-    padding:7px 14px;border-radius:6px;border:1px solid var(--forest);background:var(--forest);color:#fff;
-    font:inherit;font-size:13px;cursor:pointer;
-  }
+  .add-task button:hover, .weight-row button#weight-save-btn:hover{transform:translateY(-1px);}
   .goal-info{font-size:12px;color:var(--ink-soft);margin:-4px 0 12px;}
   .goal-info.none{color:var(--rose);}
   .goal-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line);}
@@ -183,54 +253,63 @@
   .goal-item .info{flex:1;font-size:14px;}
   .goal-item .range{font-size:12px;color:var(--ink-soft);margin-top:2px;}
   .goal-item .del{background:none;border:none;color:var(--ink-soft);cursor:pointer;font-size:16px;padding:2px 6px;}
-  .weekrange{font-size:12px;color:var(--ink-soft);margin:-14px 0 18px;}
-  .save-note{font-size:12px;color:var(--ink-soft);text-align:center;margin-top:24px;}
-  .reset-link{background:none;border:none;color:var(--rose);font-size:12px;cursor:pointer;text-decoration:underline;}
+  .weekrange{font-size:12px;color:var(--ink-soft);margin:-16px 0 18px;font-weight:600;}
+  .save-note{font-size:12px;color:var(--ink-soft);text-align:center;margin-top:26px;}
+  .reset-link{background:none;border:none;color:var(--rose);font-size:12px;cursor:pointer;opacity:.75;text-decoration:underline;}
+  .reset-link:hover{opacity:1;}
   .toast{
     position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);
-    background:var(--forest-deep);color:#fff;padding:10px 18px;border-radius:8px;font-size:14px;
+    background:var(--daybreak);color:#FFF9EF;padding:11px 20px;border-radius:999px;font-size:14px;font-weight:600;
     opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;z-index:50;
+    box-shadow:0 10px 24px -8px rgba(36,27,58,.5);
   }
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
   input:disabled{opacity:.7;background:var(--line);cursor:not-allowed;}
   button#weight-edit-btn{
-    padding:7px 14px;border-radius:6px;border:1px solid var(--line);background:#fff;color:var(--ink-soft);
-    font:inherit;font-size:13px;cursor:pointer;
+    padding:8px 16px;border-radius:999px;border:1px solid var(--teal);background:#fff;color:var(--teal-deep);
+    font:inherit;font-size:13px;font-weight:600;cursor:pointer;
   }
   .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;}
-  .stat-box{background:var(--forest-bg);border-radius:8px;padding:10px 12px;}
-  .stat-box .num{font-size:22px;font-weight:600;color:var(--forest-deep);}
+  .stat-box{background:var(--teal-bg);border-radius:14px;padding:12px 14px;}
+  .stat-box .num{font-family:'Fraunces',Georgia,serif;font-size:23px;font-weight:600;color:var(--teal-deep);}
   .stat-box .lbl{font-size:12px;color:var(--ink-soft);margin-top:2px;}
   .bars{display:flex;align-items:flex-end;gap:4px;height:90px;}
   .bars .bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;}
-  .bars .bar{width:100%;background:var(--forest);border-radius:3px 3px 0 0;min-height:2px;}
+  .bars .bar{width:100%;background:linear-gradient(180deg,var(--gold),var(--coral));border-radius:5px 5px 2px 2px;min-height:2px;}
   .bars .bar.zero{background:var(--line);}
   .bars .bar-day{font-size:9px;color:var(--ink-soft);margin-top:4px;}
   .week-row{padding:12px 0;border-top:1px solid var(--line);}
   .week-row:first-child{border-top:none;}
-  .week-row .wr-range{font-size:13px;font-weight:600;margin-bottom:8px;}
+  .week-row .wr-range{font-size:13px;font-weight:700;margin-bottom:8px;color:var(--night);}
   .wr-items{display:flex;flex-wrap:wrap;gap:6px;}
-  .wr-pill{font-size:12px;padding:4px 9px;border-radius:20px;background:var(--rose-bg);color:var(--rose);}
-  .wr-pill.hit{background:var(--forest-bg);color:var(--forest-deep);}
+  .wr-pill{font-size:12px;padding:4px 10px;border-radius:999px;background:var(--rose-bg);color:var(--rose);font-weight:600;}
+  .wr-pill.hit{background:var(--teal-bg);color:var(--teal-deep);}
   .empty-note{font-size:13px;color:var(--ink-soft);}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
+    <div class="hero-sun" aria-hidden="true"></div>
+    <svg class="hero-path" viewBox="0 0 400 56" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0,40 C60,10 100,50 160,28 C220,6 260,46 320,24 C350,13 380,30 400,20 L400,56 L0,56 Z" fill="rgba(255,249,239,.10)"/>
+      <path d="M0,44 C60,18 110,54 170,34 C230,14 270,50 330,30 C360,20 385,34 400,28" fill="none" stroke="rgba(255,249,239,.55)" stroke-width="2" stroke-dasharray="1,9" stroke-linecap="round"/>
+    </svg>
+    <p class="eyebrow">Yolculuk</p>
     <h1>Panom</h1>
+    <p class="hero-tagline">Her gün, bir adım daha iyiye.</p>
     <p id="today-label"></p>
   </header>
   <nav>
-    <button class="tab-btn active" data-tab="daily">Bugün</button>
-    <button class="tab-btn" data-tab="weekly">Bu hafta</button>
-    <button class="tab-btn" data-tab="period">Dönem hedefleri</button>
-    <button class="tab-btn" data-tab="stats">İstatistikler</button>
+    <button class="tab-btn active" data-tab="daily"><span class="ico">🌅</span>Bugün</button>
+    <button class="tab-btn" data-tab="weekly"><span class="ico">🧭</span>Bu hafta</button>
+    <button class="tab-btn" data-tab="period"><span class="ico">🗺️</span>Dönem hedefleri</button>
+    <button class="tab-btn" data-tab="stats"><span class="ico">📈</span>İstatistikler</button>
   </nav>
 
   <section id="daily" class="active">
     <div class="card">
-      <h2>Kilo</h2>
+      <h2>⚖️ Kilo</h2>
       <p class="sub">Sabah aç karnına ölçüm</p>
       <div class="weight-row">
         <input type="number" step="0.1" id="weight-input" placeholder="73.5">
@@ -238,23 +317,23 @@
         <button id="weight-save-btn" style="margin-left:auto;">Kaydet</button>
         <button id="weight-edit-btn" style="margin-left:auto;display:none;">Düzenle</button>
       </div>
-      <p id="weight-saved-note" style="font-size:12px;color:var(--forest-deep);margin:-4px 0 12px;display:none;">Bugün için kaydedildi.</p>
+      <p id="weight-saved-note" style="font-size:12px;color:var(--teal-deep);margin:-4px 0 12px;display:none;">Bugün için kaydedildi.</p>
       <div id="weight-goal-info"></div>
       <div class="progress-track"><div class="progress-fill" id="weight-progress"></div></div>
       <div class="progress-label"><span id="weight-current-label"></span><span id="weight-target-label"></span></div>
     </div>
     <div class="card">
-      <h2>Spor</h2>
+      <h2>👣 Spor</h2>
       <p class="sub">Her gün yapılması gerekmiyor — haftada 4/7 hedef, istatistik kısmında ayrı takip edilir</p>
       <div class="row" id="sport-today-row"><label><input type="checkbox" id="sport-today-checkbox"><span>Bugün spor yaptım</span></label></div>
     </div>
     <div class="card">
-      <h2>Günlük liste</h2>
+      <h2>☀️ Günlük liste</h2>
       <p class="sub">Her gün sıfırlanır</p>
       <div id="daily-checklist"></div>
     </div>
     <div class="card">
-      <h2>Bugünün sayıları</h2>
+      <h2>🔢 Bugünün sayıları</h2>
       <p class="sub">Haftalık toplamlara otomatik akar</p>
       <div class="row"><label style="flex:1;">Kaç sayfa kitap okudun?</label><input type="number" id="today-kitap-sayfa" placeholder="0" style="max-width:90px;"></div>
       <div class="row"><label style="flex:1;">Kaç sayfa İngilizce kitap okudun?</label><input type="number" id="today-ing-kitap-sayfa" placeholder="0" style="max-width:90px;"></div>
@@ -277,14 +356,14 @@
   <section id="weekly">
     <p class="weekrange" id="week-range"></p>
     <div class="card">
-      <h2>Spor</h2>
+      <h2>👣 Spor</h2>
       <p class="sub">7 günden 4'ünde hedef — günlük listeden işaretlenir</p>
       <div class="day-toggles" id="sport-days"></div>
       <div class="progress-track"><div class="progress-fill" id="sport-progress"></div></div>
       <div class="progress-label"><span id="sport-count-label"></span><span>hedef 4/7</span></div>
     </div>
     <div class="card">
-      <h2>Kitap okuma</h2>
+      <h2>📖 Kitap okuma</h2>
       <p class="sub">Haftada 100 sayfa, 4 gün okumuş olmak — günlük listeden işlenir</p>
       <div class="progress-track"><div class="progress-fill" id="book-progress"></div></div>
       <div class="progress-label"><span id="book-pages-label"></span><span>hedef 100 sayfa</span></div>
@@ -292,7 +371,7 @@
       <div class="progress-label"><span id="book-days-label"></span><span>hedef 4 gün</span></div>
     </div>
     <div class="card">
-      <h2>İngilizce kitap okuma</h2>
+      <h2>📗 İngilizce kitap okuma</h2>
       <p class="sub">Haftada 30 sayfa, 3 gün okumuş olmak — günlük listeden işlenir</p>
       <div class="progress-track"><div class="progress-fill" id="ing-book-pages-progress"></div></div>
       <div class="progress-label"><span id="ing-book-pages-label"></span><span>hedef 30 sayfa</span></div>
@@ -300,13 +379,13 @@
       <div class="progress-label"><span id="ing-book-days-label"></span><span>hedef 3 gün</span></div>
     </div>
     <div class="card">
-      <h2>İngilizce dizi</h2>
+      <h2>🎬 İngilizce dizi</h2>
       <p class="sub">Haftada 4-5 bölüm — günlük listeden işlenir</p>
       <div class="progress-track"><div class="progress-fill" id="show-progress"></div></div>
       <div class="progress-label"><span id="show-count-label"></span><span>hedef 5 bölüm</span></div>
     </div>
     <div class="card">
-      <h2>Ekran süresi</h2>
+      <h2>⏳ Ekran süresi</h2>
       <p class="sub">Bu haftanın günlük ortalaması — günlük listeden işlenir</p>
       <div class="stat-grid">
         <div class="stat-box"><div class="num" id="screen-week-avg">—</div><div class="lbl">günlük ortalama</div></div>
@@ -314,7 +393,7 @@
       </div>
     </div>
     <div class="card">
-      <h2>Ev işleri ve düzen</h2>
+      <h2>🧺 Ev işleri ve düzen</h2>
       <div id="weekly-checklist"></div>
     </div>
     <p style="text-align:center;margin-top:4px;">
@@ -324,7 +403,7 @@
 
   <section id="period">
     <div class="card">
-      <h2>Kilo hedefleri</h2>
+      <h2>🎯 Kilo hedefleri</h2>
       <p class="sub">Tarih aralığı ver, o aralıktaki her gün o hedef gösterilir</p>
       <div id="weight-goal-list"></div>
       <div class="add-task">
@@ -335,7 +414,7 @@
       </div>
     </div>
     <div class="card">
-      <h2>Dönem hedefleri</h2>
+      <h2>🧗 Dönem hedefleri</h2>
       <p class="sub">Belirli bir tarihe kadar yapılması gerekenler</p>
       <div id="period-list"></div>
       <div class="add-task">
@@ -351,31 +430,31 @@
 
   <section id="stats">
     <div class="card">
-      <h2>Son 30 gün</h2>
+      <h2>🏁 Son 30 gün</h2>
       <div class="stat-grid" id="overview-stats"></div>
     </div>
     <div class="card">
-      <h2>Kilo trendi</h2>
+      <h2>📉 Kilo trendi</h2>
       <p class="sub">Ölçtüğün her gün, hedefe kadar</p>
       <div id="weight-chart"></div>
     </div>
     <div class="card">
-      <h2>Günlük tamamlanma</h2>
+      <h2>📊 Günlük tamamlanma</h2>
       <p class="sub">Son 14 gün, günlük listenin yüzde kaçı bitti</p>
       <div id="daily-chart"></div>
     </div>
     <div class="card">
-      <h2>Ekran süresi — günlük</h2>
+      <h2>⏳ Ekran süresi — günlük</h2>
       <p class="sub">Girdiğin her gün, saat cinsinden</p>
       <div id="screen-daily-chart"></div>
     </div>
     <div class="card">
-      <h2>Ekran süresi — haftalık ortalama</h2>
+      <h2>⏳ Ekran süresi — haftalık ortalama</h2>
       <p class="sub">Son 8 hafta, günlük ortalama saat</p>
       <div id="screen-weekly-chart"></div>
     </div>
     <div class="card">
-      <h2>Haftalık hedefler</h2>
+      <h2>🧭 Haftalık hedefler</h2>
       <p class="sub">Geçmiş haftalar, hedefi tutturup tutturmadığın</p>
       <div id="weekly-history"></div>
     </div>
@@ -789,13 +868,13 @@ function renderStats(){
     const pts = vals.map((v,i)=>`${pad+i*xStep},${yOf(v)}`).join(' ');
     const targetLine = activeGoal ? (()=>{
       const targetY = yOf(activeGoal.targetWeight);
-      return `<line x1="${pad}" y1="${targetY}" x2="${w-pad}" y2="${targetY}" stroke="var(--ochre)" stroke-width="1" stroke-dasharray="4,4"/>
-      <text x="${w-pad}" y="${targetY-6}" text-anchor="end" font-size="11" fill="var(--ochre-deep)">hedef ${activeGoal.targetWeight}</text>`;
+      return `<line x1="${pad}" y1="${targetY}" x2="${w-pad}" y2="${targetY}" stroke="var(--gold-deep)" stroke-width="1" stroke-dasharray="4,4"/>
+      <text x="${w-pad}" y="${targetY-6}" text-anchor="end" font-size="11" fill="var(--gold-deep)">hedef ${activeGoal.targetWeight}</text>`;
     })() : '';
     wc.innerHTML = `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:${h}px;">
       ${targetLine}
-      <polyline points="${pts}" fill="none" stroke="var(--forest)" stroke-width="2"/>
-      ${vals.map((v,i)=>`<circle cx="${pad+i*xStep}" cy="${yOf(v)}" r="3" fill="var(--forest)"/>`).join('')}
+      <polyline points="${pts}" fill="none" stroke="var(--teal)" stroke-width="2"/>
+      ${vals.map((v,i)=>`<circle cx="${pad+i*xStep}" cy="${yOf(v)}" r="3" fill="var(--teal)"/>`).join('')}
     </svg>`;
   }
 
