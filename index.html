@@ -139,6 +139,7 @@
     cursor:pointer;
     color:var(--ink-soft);
   }
+  .day-toggles button:disabled{cursor:default;opacity:1;}
   .day-toggles button.on{
     background:var(--forest-bg);
     border-color:var(--forest);
@@ -246,42 +247,45 @@
       <p class="sub">Her gün sıfırlanır</p>
       <div id="daily-checklist"></div>
     </div>
+    <div class="card">
+      <h2>Bugünün sayıları</h2>
+      <p class="sub">Haftalık toplamlara otomatik akar</p>
+      <div class="row"><label style="flex:1;">Kaç sayfa kitap okudun?</label><input type="number" id="today-kitap-sayfa" placeholder="0" style="max-width:90px;"></div>
+      <div class="row"><label style="flex:1;">Kaç sayfa İngilizce kitap okudun?</label><input type="number" id="today-ing-kitap-sayfa" placeholder="0" style="max-width:90px;"></div>
+      <div class="row"><label style="flex:1;">Kaç bölüm İngilizce dizi izledin?</label><input type="number" id="today-dizi-bolum" placeholder="0" style="max-width:90px;"></div>
+    </div>
   </section>
 
   <section id="weekly">
     <p class="weekrange" id="week-range"></p>
     <div class="card">
       <h2>Spor</h2>
-      <p class="sub">7 günden 4'ünde hedef</p>
+      <p class="sub">7 günden 4'ünde hedef — günlük listeden işaretlenir</p>
       <div class="day-toggles" id="sport-days"></div>
       <div class="progress-track"><div class="progress-fill" id="sport-progress"></div></div>
       <div class="progress-label"><span id="sport-count-label"></span><span>hedef 4/7</span></div>
     </div>
     <div class="card">
       <h2>Kitap okuma</h2>
-      <p class="sub">Haftada 100 sayfa, 4 gün okumuş olmak</p>
-      <div class="weight-row">
-        <input type="number" id="book-pages" placeholder="0">
-        <span style="font-size:13px;color:var(--ink-soft);">/ 100 sayfa</span>
-      </div>
-      <div class="progress-track" style="margin-bottom:16px;"><div class="progress-fill" id="book-progress"></div></div>
-      <p class="sub" style="margin-bottom:6px;">Bu hafta kaç gün okudun?</p>
-      <div class="counter">
-        <button id="book-days-minus">-</button>
-        <span class="val" id="book-days-val">0</span>
-        <button id="book-days-plus">+</button>
-        <span style="font-size:13px;color:var(--ink-soft);">/ 4 gün</span>
-      </div>
+      <p class="sub">Haftada 100 sayfa, 4 gün okumuş olmak — günlük listeden işlenir</p>
+      <div class="progress-track"><div class="progress-fill" id="book-progress"></div></div>
+      <div class="progress-label"><span id="book-pages-label"></span><span>hedef 100 sayfa</span></div>
+      <div class="progress-track" style="margin-top:10px;"><div class="progress-fill" id="book-days-progress"></div></div>
+      <div class="progress-label"><span id="book-days-label"></span><span>hedef 4 gün</span></div>
+    </div>
+    <div class="card">
+      <h2>İngilizce kitap okuma</h2>
+      <p class="sub">Haftada 30 sayfa, 3 gün okumuş olmak — günlük listeden işlenir</p>
+      <div class="progress-track"><div class="progress-fill" id="ing-book-pages-progress"></div></div>
+      <div class="progress-label"><span id="ing-book-pages-label"></span><span>hedef 30 sayfa</span></div>
+      <div class="progress-track" style="margin-top:10px;"><div class="progress-fill" id="ing-book-days-progress"></div></div>
+      <div class="progress-label"><span id="ing-book-days-label"></span><span>hedef 3 gün</span></div>
     </div>
     <div class="card">
       <h2>İngilizce dizi</h2>
-      <p class="sub">Haftada 4-5 bölüm</p>
-      <div class="counter">
-        <button id="show-minus">-</button>
-        <span class="val" id="show-val">0</span>
-        <button id="show-plus">+</button>
-        <span style="font-size:13px;color:var(--ink-soft);">bölüm</span>
-      </div>
+      <p class="sub">Haftada 4-5 bölüm — günlük listeden işlenir</p>
+      <div class="progress-track"><div class="progress-fill" id="show-progress"></div></div>
+      <div class="progress-label"><span id="show-count-label"></span><span>hedef 5 bölüm</span></div>
     </div>
     <div class="card">
       <h2>Ev işleri ve düzen</h2>
@@ -363,6 +367,7 @@ const DAY_NAMES = {mon:'Pzt',tue:'Sal',wed:'Çrş',thu:'Per',fri:'Cum',sat:'Cmt'
 const DAY_ORDER = ['mon','tue','wed','thu','fri','sat','sun'];
 
 const DAILY_ITEMS = [
+  {id:'spor', label:'Spor yaptım'},
   {id:'kahvalti', label:'Kahvaltı', hint:'Hafta içi, mesaiden önce 09:30\'a kadar'},
   {id:'kreatin', label:'Kreatin'},
   {id:'omega3', label:'Omega 3'},
@@ -431,15 +436,40 @@ function getDaily(key){
     data.daily[key] = {};
     DAILY_ITEMS.forEach(i=>data.daily[key][i.id]=false);
     data.daily[key].kilo = null;
+    data.daily[key].kitapSayfaGun = 0;
+    data.daily[key].ingKitapSayfaGun = 0;
+    data.daily[key].diziBolumGun = 0;
   }
   return data.daily[key];
 }
 function getWeekly(key){
   if(!data.weekly[key]){
-    data.weekly[key] = {sporDays:{}, kitapSayfa:0, kitapGun:0, dizi:0};
+    data.weekly[key] = {};
     WEEKLY_ITEMS.forEach(i=>data.weekly[key][i.id]=false);
   }
   return data.weekly[key];
+}
+function weekdayIndex(dateKey){
+  return (new Date(dateKey).getDay()+6)%7;
+}
+function computeWeeklyAgg(wKey){
+  const sportDays = {};
+  let sportCount=0, kitapSayfa=0, kitapGun=0, dizi=0, ingKitapSayfa=0, ingKitapGun=0;
+  DAY_ORDER.forEach((code,i)=>{
+    const key = todayKey(dateOfWeekday(wKey,i));
+    const rec = data.daily[key];
+    const sportOn = !!(rec && rec.spor);
+    sportDays[code] = sportOn;
+    if(sportOn) sportCount++;
+    const kp = (rec && rec.kitapSayfaGun) || 0;
+    kitapSayfa += kp;
+    if(kp>0) kitapGun++;
+    const ip = (rec && rec.ingKitapSayfaGun) || 0;
+    ingKitapSayfa += ip;
+    if(ip>0) ingKitapGun++;
+    dizi += (rec && rec.diziBolumGun) || 0;
+  });
+  return {sportDays, sportCount, kitapSayfa, kitapGun, dizi, ingKitapSayfa, ingKitapGun};
 }
 
 async function load(){
@@ -525,29 +555,36 @@ function render(){
     dl.appendChild(row);
   });
 
+  document.getElementById('today-kitap-sayfa').value = d.kitapSayfaGun || '';
+  document.getElementById('today-ing-kitap-sayfa').value = d.ingKitapSayfaGun || '';
+  document.getElementById('today-dizi-bolum').value = d.diziBolumGun || '';
+
   document.getElementById('week-range').textContent = weekRangeLabel(wKey);
+  const agg = computeWeeklyAgg(wKey);
   const sd = document.getElementById('sport-days');
   sd.innerHTML = '';
-  DAY_ORDER.forEach((code,idx)=>{
+  DAY_ORDER.forEach((code)=>{
     const btn = document.createElement('button');
-    const isOn = !!w.sporDays[code];
     btn.textContent = DAY_NAMES[code];
-    btn.className = isOn?'on':'';
-    btn.addEventListener('click',()=>{
-      w.sporDays[code] = !w.sporDays[code];
-      queueSave();
-      render();
-    });
+    btn.className = agg.sportDays[code]?'on':'';
+    btn.disabled = true;
     sd.appendChild(btn);
   });
-  const sportCount = DAY_ORDER.filter(c=>w.sporDays[c]).length;
-  document.getElementById('sport-progress').style.width = Math.min(100,(sportCount/4)*100)+'%';
-  document.getElementById('sport-count-label').textContent = sportCount+'/7 gün';
+  document.getElementById('sport-progress').style.width = Math.min(100,(agg.sportCount/4)*100)+'%';
+  document.getElementById('sport-count-label').textContent = agg.sportCount+'/7 gün';
 
-  document.getElementById('book-pages').value = w.kitapSayfa || '';
-  document.getElementById('book-progress').style.width = Math.min(100,((w.kitapSayfa||0)/100)*100)+'%';
-  document.getElementById('book-days-val').textContent = w.kitapGun;
-  document.getElementById('show-val').textContent = w.dizi;
+  document.getElementById('book-progress').style.width = Math.min(100,(agg.kitapSayfa/100)*100)+'%';
+  document.getElementById('book-pages-label').textContent = agg.kitapSayfa+' sayfa';
+  document.getElementById('book-days-progress').style.width = Math.min(100,(agg.kitapGun/4)*100)+'%';
+  document.getElementById('book-days-label').textContent = agg.kitapGun+' gün';
+
+  document.getElementById('ing-book-pages-progress').style.width = Math.min(100,(agg.ingKitapSayfa/30)*100)+'%';
+  document.getElementById('ing-book-pages-label').textContent = agg.ingKitapSayfa+' sayfa';
+  document.getElementById('ing-book-days-progress').style.width = Math.min(100,(agg.ingKitapGun/3)*100)+'%';
+  document.getElementById('ing-book-days-label').textContent = agg.ingKitapGun+' gün';
+
+  document.getElementById('show-progress').style.width = Math.min(100,(agg.dizi/5)*100)+'%';
+  document.getElementById('show-count-label').textContent = agg.dizi+' bölüm';
 
   const wl = document.getElementById('weekly-checklist');
   wl.innerHTML = '';
@@ -647,12 +684,8 @@ function renderStats(){
   const weightEntries = Object.keys(data.daily).filter(k=>data.daily[k].kilo!=null).sort();
   const lastWeight = weightEntries.length ? data.daily[weightEntries[weightEntries.length-1]].kilo : null;
   const activeGoal = findActiveGoal(todayKey());
-  const weeksLogged = lastNWeekKeys(4).filter(wk=>data.weekly[wk]);
-  const weeksHit = weeksLogged.filter(wk=>{
-    const w=data.weekly[wk];
-    const sportDone = DAY_ORDER.filter(c=>w.sporDays[c]).length>=4;
-    return sportDone;
-  }).length;
+  const weeksLogged = lastNWeekKeys(4);
+  const weeksHit = weeksLogged.filter(wk=> computeWeeklyAgg(wk).sportCount>=4).length;
 
   document.getElementById('overview-stats').innerHTML = `
     <div class="stat-box"><div class="num">${avgPct}%</div><div class="lbl">ortalama günlük tamamlanma</div></div>
@@ -693,18 +726,19 @@ function renderStats(){
   }).join('')}</div>`;
 
   const wh = document.getElementById('weekly-history');
-  const wKeys = Object.keys(data.weekly).sort().reverse().slice(0,8);
+  const wKeys = [...lastNWeekKeys(8)].reverse();
   if(wKeys.length===0){
     wh.innerHTML = '<p class="empty-note">Henüz haftalık veri yok.</p>';
   }else{
     wh.innerHTML = wKeys.map(wk=>{
-      const w = data.weekly[wk];
-      const sportCount = DAY_ORDER.filter(c=>w.sporDays[c]).length;
+      const agg = computeWeeklyAgg(wk);
+      const w = data.weekly[wk] || {};
       const items = [
-        {lbl:'Spor '+sportCount+'/7', hit:sportCount>=4},
-        {lbl:'Kitap '+(w.kitapSayfa||0)+' syf', hit:(w.kitapSayfa||0)>=100},
-        {lbl:'Kitap '+w.kitapGun+' gün', hit:w.kitapGun>=4},
-        {lbl:'Dizi '+w.dizi+' bölüm', hit:w.dizi>=4},
+        {lbl:'Spor '+agg.sportCount+'/7', hit:agg.sportCount>=4},
+        {lbl:'Kitap '+agg.kitapSayfa+' syf', hit:agg.kitapSayfa>=100},
+        {lbl:'Kitap '+agg.kitapGun+' gün', hit:agg.kitapGun>=4},
+        {lbl:'İng. kitap '+agg.ingKitapSayfa+' syf', hit:agg.ingKitapSayfa>=30},
+        {lbl:'Dizi '+agg.dizi+' bölüm', hit:agg.dizi>=5},
         {lbl:'Çamaşır', hit:w.camasirRenkli&&w.camasirBeyaz},
         {lbl:'Çarşaf', hit:w.carsaf},
         {lbl:'Para hesabı', hit:w.paraHesap}
@@ -760,31 +794,20 @@ document.getElementById('add-goal-btn').addEventListener('click', async ()=>{
   await save();
   render();
 });
-document.getElementById('book-pages').addEventListener('input', e=>{
-  const w = getWeekly(weekKey());
-  w.kitapSayfa = e.target.value===''?0:parseInt(e.target.value,10);
+document.getElementById('today-kitap-sayfa').addEventListener('input', e=>{
+  const d = getDaily(todayKey());
+  d.kitapSayfaGun = e.target.value===''?0:parseInt(e.target.value,10);
   queueSave();
-  document.getElementById('book-progress').style.width = Math.min(100,((w.kitapSayfa||0)/100)*100)+'%';
 });
-document.getElementById('book-days-minus').addEventListener('click',()=>{
-  const w = getWeekly(weekKey());
-  w.kitapGun = Math.max(0, w.kitapGun-1);
-  queueSave(); render();
+document.getElementById('today-ing-kitap-sayfa').addEventListener('input', e=>{
+  const d = getDaily(todayKey());
+  d.ingKitapSayfaGun = e.target.value===''?0:parseInt(e.target.value,10);
+  queueSave();
 });
-document.getElementById('book-days-plus').addEventListener('click',()=>{
-  const w = getWeekly(weekKey());
-  w.kitapGun = Math.min(7, w.kitapGun+1);
-  queueSave(); render();
-});
-document.getElementById('show-minus').addEventListener('click',()=>{
-  const w = getWeekly(weekKey());
-  w.dizi = Math.max(0, w.dizi-1);
-  queueSave(); render();
-});
-document.getElementById('show-plus').addEventListener('click',()=>{
-  const w = getWeekly(weekKey());
-  w.dizi = w.dizi+1;
-  queueSave(); render();
+document.getElementById('today-dizi-bolum').addEventListener('input', e=>{
+  const d = getDaily(todayKey());
+  d.diziBolumGun = e.target.value===''?0:parseInt(e.target.value,10);
+  queueSave();
 });
 document.getElementById('add-task-btn').addEventListener('click',()=>{
   const titleInput = document.getElementById('new-task-title');
@@ -802,6 +825,7 @@ document.querySelectorAll('.tab-btn').forEach(btn=>{
     document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById(btn.dataset.tab).classList.add('active');
+    render();
   });
 });
 
