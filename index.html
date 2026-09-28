@@ -271,6 +271,7 @@
   }
   .progress-fill{height:100%;background:var(--journey);border-radius:6px;transition:width .4s ease;}
   .progress-label{display:flex;justify-content:space-between;font-size:12px;color:var(--ink-soft);margin-top:7px;}
+  .mini-chart{margin:2px 0 2px;}
   .day-toggles{display:flex;gap:8px;margin-bottom:14px;}
   .day-toggles button{
     flex:1;
@@ -424,7 +425,7 @@
       </div>
       <p id="weight-saved-note" style="font-size:12px;color:var(--teal-text);margin:-4px 0 12px;display:none;">Bugün için kaydedildi.</p>
       <div id="weight-goal-info"></div>
-      <div class="progress-track"><div class="progress-fill" id="weight-progress"></div></div>
+      <div class="mini-chart" id="weight-mini-chart"></div>
       <div class="progress-label"><span id="weight-current-label"></span><span id="weight-target-label"></span></div>
     </div>
     <div class="card">
@@ -844,20 +845,40 @@ function render(){
   const g = findActiveGoal(tKey);
   const goalInfoEl = document.getElementById('weight-goal-info');
   if(g){
-    const baseline = goalBaseline(g);
-    const current = d.kilo ?? baseline ?? g.targetWeight;
-    const pct = baseline!=null ? Math.max(0,Math.min(100, ((current-baseline)/(g.targetWeight-baseline))*100)) : 0;
-    document.getElementById('weight-progress').style.width = (isFinite(pct)?pct:0)+'%';
     document.getElementById('weight-current-label').textContent = (d.kilo ?? '—') + ' kg';
     document.getElementById('weight-target-label').textContent = 'hedef '+g.targetWeight+' kg — '+new Date(g.targetDate).toLocaleDateString('tr-TR',{day:'numeric',month:'long'});
     goalInfoEl.className = 'goal-info';
     goalInfoEl.textContent = '';
   }else{
-    document.getElementById('weight-progress').style.width = '0%';
     document.getElementById('weight-current-label').textContent = (d.kilo ?? '—') + ' kg';
     document.getElementById('weight-target-label').textContent = '';
     goalInfoEl.className = 'goal-info none';
     goalInfoEl.textContent = 'Bugün için bir kilo hedefi tanımlı değil. Dönem hedefleri sekmesinden ekleyebilirsin.';
+  }
+
+  const wmc = document.getElementById('weight-mini-chart');
+  const last7 = lastNDates(7);
+  const vals7 = last7.map(k=> (data.daily[k] && data.daily[k].kilo!=null) ? data.daily[k].kilo : null);
+  const known7 = vals7.filter(v=>v!=null);
+  if(known7.length<1){
+    wmc.innerHTML = '<p class="empty-note" style="margin:2px 0 8px;">Son 7 günde kilo girişi yok.</p>';
+  }else{
+    const allVals = known7.concat(g ? [g.targetWeight] : []);
+    const min = Math.min(...allVals)-0.25, max = Math.max(...allVals)+0.25;
+    const mw=300, mh=54, mpad=6;
+    const xStep = (mw-2*mpad)/6;
+    const yOf = v => mh-mpad-((v-min)/((max-min)||1))*(mh-2*mpad);
+    const segments = [];
+    let cur = [];
+    vals7.forEach((v,i)=>{
+      if(v==null){ if(cur.length) segments.push(cur); cur=[]; }
+      else cur.push([mpad+i*xStep, yOf(v)]);
+    });
+    if(cur.length) segments.push(cur);
+    const polylines = segments.map(seg=>`<polyline points="${seg.map(p=>p.join(',')).join(' ')}" fill="none" stroke="var(--teal)" stroke-width="2"/>`).join('');
+    const circles = vals7.map((v,i)=> v==null ? '' : `<circle cx="${mpad+i*xStep}" cy="${yOf(v)}" r="3" fill="var(--teal)"><title>${new Date(last7[i]).toLocaleDateString('tr-TR',{day:'numeric',month:'numeric'})}: ${v} kg</title></circle>`).join('');
+    const targetLine = g ? `<line x1="${mpad}" y1="${yOf(g.targetWeight)}" x2="${mw-mpad}" y2="${yOf(g.targetWeight)}" stroke="var(--gold-deep)" stroke-width="1" stroke-dasharray="3,3"/>` : '';
+    wmc.innerHTML = `<svg viewBox="0 0 ${mw} ${mh}" style="width:100%;height:${mh}px;display:block;">${targetLine}${polylines}${circles}</svg>`;
   }
 
   const sportRow = document.getElementById('sport-today-row');
